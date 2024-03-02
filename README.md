@@ -1,2 +1,2 @@
 # StoneRed.NetificationApi
- A .NET librarly for NotificationAPI
+> A .NET library for NotificationAPI
