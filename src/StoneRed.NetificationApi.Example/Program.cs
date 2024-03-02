@@ -21,7 +21,7 @@ notificationApiClient.RequestedNotificationsReceived += (sender, args) =>
     Console.WriteLine("Requested notifications received");
     foreach (NotificationReceivedData notificationReceiveData in args.Notifications)
     {
-        Console.WriteLine($"Notification received: {notificationReceiveData.Id}");
+        Console.WriteLine($"Requested notification received: {notificationReceiveData.Id}");
     }
 };
 
@@ -30,7 +30,7 @@ notificationApiClient.NewNotificationsReceived += (sender, args) =>
     Console.WriteLine("New notifications received");
     foreach (NotificationReceivedData notificationReceiveData in args.Notifications)
     {
-        Console.WriteLine($"New Notification received: {notificationReceiveData.Id}");
+        Console.WriteLine($"New notification received: {notificationReceiveData.Id}");
     }
 };
 
