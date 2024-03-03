@@ -4,17 +4,25 @@ using StoneRed.NetificationApi.Server;
 using StoneRed.NetificationApi.Server.IdentifyUser;
 using StoneRed.NetificationApi.Server.Send;
 
-const string userId = "<UserId>";
-const string notificationId = "<NotifcationId>";
-const string clientId = "<ClientId>";
-const string clientSecret = "<ClientSecret>";
+// The ID of the user to send the notification to
+string userId = "test";
+
+// The ID of the notification to send
+string notificationId = "test";
+
+// The client ID and secret to use for the API
+string clientId = Environment.GetEnvironmentVariable("NOTIFICATION_API_CLIENT_ID", EnvironmentVariableTarget.User) ?? "<ClientId>";
+string clientSecret = Environment.GetEnvironmentVariable("NOTIFICATION_API_SECRET", EnvironmentVariableTarget.User) ?? "<ClientSecret>";
+
+// The client is used to receive notifications
+NotificationApiClient notificationApiClient = new NotificationApiClient(userId, clientId);
+
+// The server is used to send notifications
+NotificationApiServer notificationApiServer = new NotificationApiServer(clientId, clientSecret, false);
 
 Console.WriteLine("Start client");
-NotificationApiClient notificationApiClient = new NotificationApiClient("test", clientId, clientSecret, false);
 await notificationApiClient.Start();
 Console.WriteLine("Client started");
-
-notificationApiClient.RequestNotifications();
 
 notificationApiClient.RequestedNotificationsReceived += (sender, args) =>
 {
@@ -34,13 +42,23 @@ notificationApiClient.NewNotificationsReceived += (sender, args) =>
     }
 };
 
-NotificationApiServer notificationApiServer = new NotificationApiServer(clientId, clientSecret, false);
+notificationApiClient.UnreadCountReceived += (sender, args) =>
+{
+    Console.WriteLine($"Unread count received: {args.Count}");
+};
+
+Console.WriteLine("Request unread count");
+notificationApiClient.RequestUnreadCount();
+Console.WriteLine("Unread count requested");
+
+Console.WriteLine("Request notifications");
+notificationApiClient.RequestNotifications(5);
+Console.WriteLine("Notifications requested");
 
 Console.WriteLine("Identify user");
 await notificationApiServer.Identify(new IdentifyUserData
 {
-    UserId = userId,
-    Email = "kek123@stone-red.net"
+    UserId = userId
 });
 Console.WriteLine("User identified");
 

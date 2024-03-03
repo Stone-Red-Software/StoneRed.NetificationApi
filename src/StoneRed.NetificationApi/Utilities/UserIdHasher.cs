@@ -3,7 +3,7 @@ using System.Text;
 
 namespace StoneRed.NetificationApi.Utilities;
 
-internal static class UserIdHasher
+public static class UserIdHasher
 {
     public static string Hash(string userId, string clientSecret)
     {

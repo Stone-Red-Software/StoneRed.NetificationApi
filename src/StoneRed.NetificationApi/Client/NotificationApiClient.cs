@@ -19,9 +19,11 @@ public class NotificationApiClient
 
     public event EventHandler<NotificationsReceivedEventArgs>? NewNotificationsReceived;
 
+    public event EventHandler<CountReceivedEventArgs>? UnreadCountReceived;
+
     private readonly WebsocketClient client;
 
-    public NotificationApiClient(string userId, string clientId, string clientSecret, bool secureMode, string baseAddress = "wss://ws.notificationapi.com")
+    public NotificationApiClient(string userId, string clientId, string? userIdHash = null, string baseAddress = "wss://ws.notificationapi.com")
     {
         UriBuilder uriBuilder = new UriBuilder(baseAddress);
 
@@ -29,9 +31,9 @@ public class NotificationApiClient
         query["envId"] = clientId;
         query["userId"] = userId;
 
-        if (secureMode)
+        if (userIdHash is not null)
         {
-            query["userIdHash"] = UserIdHasher.Hash(userId, clientSecret);
+            query["userIdHash"] = userIdHash;
         }
 
         uriBuilder.Query = query.ToString();
@@ -46,7 +48,7 @@ public class NotificationApiClient
         _ = client.MessageReceived
             .Where(msg => msg.Text is not null)
             .Where(msg => WebsocketMessageComparer.Compare(msg.Text, "inapp_web/notifications"))
-            .Select(msg => WebsocketMessageConverter.ConvertWebsocketMessage<NotificationsReceivedPayload>(msg.Text!))
+            .Select(msg => WebsocketMessageConverter.ConvertWebsocketMessage<NotificationsPayload>(msg.Text!))
             .Subscribe(msg =>
             {
                 if (msg.Payload is null)
@@ -60,7 +62,7 @@ public class NotificationApiClient
         _ = client.MessageReceived
            .Where(msg => msg.Text is not null)
            .Where(msg => WebsocketMessageComparer.Compare(msg.Text, "inapp_web/new_notifications"))
-           .Select(msg => WebsocketMessageConverter.ConvertWebsocketMessage<NotificationsReceivedPayload>(msg.Text!))
+           .Select(msg => WebsocketMessageConverter.ConvertWebsocketMessage<NotificationsPayload>(msg.Text!))
            .Subscribe(msg =>
            {
                if (msg.Payload is null)
@@ -70,6 +72,20 @@ public class NotificationApiClient
 
                NewNotificationsReceived?.Invoke(this, new NotificationsReceivedEventArgs(msg.Payload.Notifications));
            });
+
+        _ = client.MessageReceived
+            .Where(msg => msg.Text is not null)
+            .Where(msg => WebsocketMessageComparer.Compare(msg.Text, "inapp_web/unread_count"))
+            .Select(msg => WebsocketMessageConverter.ConvertWebsocketMessage<CountPayload>(msg.Text!))
+            .Subscribe(msg =>
+            {
+                if (msg.Payload is null)
+                {
+                    return;
+                }
+
+                UnreadCountReceived?.Invoke(this, new CountReceivedEventArgs(msg.Payload.Count));
+            });
     }
 
     public Task Start()
@@ -77,13 +93,37 @@ public class NotificationApiClient
         return client.StartOrFail();
     }
 
-    public bool RequestNotifications()
+    public bool RequestNotifications(int count)
     {
-        WebsocketMessage<object> message = new("inapp_web/notifications")
+        WebsocketMessage<CountPayload> message = new("inapp_web/notifications")
+        {
+            Payload = new(count)
+        };
+
+        return client.Send(JsonSerializer.Serialize(message, Configuration.JsonSerializerOptions));
+    }
+
+    public bool RequestUnreadCount()
+    {
+        WebsocketMessage message = new("inapp_web/unread_count");
+
+        return client.Send(JsonSerializer.Serialize(message, Configuration.JsonSerializerOptions));
+    }
+
+    public bool ClearUnread()
+    {
+        WebsocketMessage message = new("inapp_web/unread_clear");
+
+        return client.Send(JsonSerializer.Serialize(message, Configuration.JsonSerializerOptions));
+    }
+
+    public bool ClearUnread(string notificationId)
+    {
+        WebsocketMessage<object> message = new("inapp_web/unread_clear")
         {
             Payload = new
             {
-                count = 50
+                notificationId
             }
         };
 

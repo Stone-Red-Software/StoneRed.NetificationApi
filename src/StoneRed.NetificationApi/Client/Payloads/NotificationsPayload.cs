@@ -2,7 +2,7 @@
 
 namespace StoneRed.NetificationApi.Client.Payloads;
 
-internal class NotificationsReceivedPayload
+internal class NotificationsPayload
 {
     public required List<NotificationReceivedData> Notifications { get; set; }
 }
