@@ -47,6 +47,23 @@ notificationApiClient.UnreadCountReceived += (sender, args) =>
     Console.WriteLine($"Unread count received: {args.Count}");
 };
 
+notificationApiClient.UserPreferencesReceived += (sender, args) =>
+{
+    Console.WriteLine("User preferences received");
+    foreach (NotificationUserPreference notificationPreference in args.UserPreferences)
+    {
+        Console.WriteLine($"Notification preference received: {notificationPreference.Title}");
+        foreach (NotificationUserPreferenceSetting preference in notificationPreference.Settings)
+        {
+            Console.WriteLine($"Notification preference: {preference.Channel} {preference.ChannelName} {preference.State}");
+        }
+    }
+};
+
+Console.WriteLine("Request user preferences");
+notificationApiClient.RequestUserPreferences();
+Console.WriteLine("User preferences requested");
+
 Console.WriteLine("Request unread count");
 notificationApiClient.RequestUnreadCount();
 Console.WriteLine("Unread count requested");

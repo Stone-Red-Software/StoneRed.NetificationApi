@@ -21,6 +21,8 @@ public class NotificationApiClient
 
     public event EventHandler<CountReceivedEventArgs>? UnreadCountReceived;
 
+    public event EventHandler<UserPreferencesReceivedEventArgs>? UserPreferencesReceived;
+
     private readonly WebsocketClient client;
 
     public NotificationApiClient(string userId, string clientId, string? userIdHash = null, string baseAddress = "wss://ws.notificationapi.com")
@@ -86,6 +88,20 @@ public class NotificationApiClient
 
                 UnreadCountReceived?.Invoke(this, new CountReceivedEventArgs(msg.Payload.Count));
             });
+
+        _ = client.MessageReceived
+            .Where(msg => msg.Text is not null)
+            .Where(msg => WebsocketMessageComparer.Compare(msg.Text, "user_preferences/preferences"))
+            .Select(msg => WebsocketMessageConverter.ConvertWebsocketMessage<UserPreferencesPayload>(msg.Text!))
+            .Subscribe(msg =>
+            {
+                if (msg.Payload is null)
+                {
+                    return;
+                }
+
+                UserPreferencesReceived?.Invoke(this, new UserPreferencesReceivedEventArgs(msg.Payload.UserPreferences));
+            });
     }
 
     public Task Start()
@@ -128,6 +144,32 @@ public class NotificationApiClient
         };
 
         return client.Send(JsonSerializer.Serialize(message, Configuration.JsonSerializerOptions));
+    }
+
+    public bool RequestUserPreferences()
+    {
+        WebsocketMessage message = new("user_preferences/get_preferences");
+
+        return client.Send(JsonSerializer.Serialize(message, Configuration.JsonSerializerOptions));
+    }
+
+    public bool PatchUserPreferences(string notificationId, params NotificationChannelPreference[] channelPreferences)
+    {
+        WebsocketMessage<object> message = new("user_preferences/patch_preferences")
+        {
+            Payload = new object[]
+            {
+                new
+                {
+                    notificationId,
+                    channelPreferences
+                }
+            }
+        };
+
+        string msg = JsonSerializer.Serialize(message, Configuration.JsonSerializerOptions);
+
+        return client.Send(msg);
     }
 
     public Task Stop()

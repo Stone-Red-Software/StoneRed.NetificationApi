@@ -12,8 +12,16 @@ internal static class WebsocketMessageComparer
         {
             return false;
         }
+        WebsocketMessage? websocketMessage;
 
-        WebsocketMessage? websocketMessage = JsonSerializer.Deserialize<WebsocketMessage>(message, Configuration.JsonSerializerOptions);
+        try
+        {
+            websocketMessage = JsonSerializer.Deserialize<WebsocketMessage>(message, Configuration.JsonSerializerOptions);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
 
         return websocketMessage?.Route == route;
     }
