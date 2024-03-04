@@ -23,4 +23,4 @@ jobs:
       - name: Create the package
         run: dotnet pack --configuration Release src/StoneRed.NetificationApi
       - name: Publish the package to nuget.org
-        run: dotnet nuget push src/StoneRed.NetificationApi/bin/Release/*.nupkg -k $NUGET_TOKEN -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push src/StoneRed.NetificationApi/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
