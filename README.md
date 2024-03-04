@@ -92,3 +92,6 @@ notificationApiClient.RequestUnreadCount();
 ```
 
 For a more sophisticated example, please check out this [example](https://github.com/Stone-Red-Software/StoneRed.NetificationApi/blob/main/src/StoneRed.NetificationApi.Example/Program.cs).
+
+# Third party licenses
+- [Websocket.Client](https://github.com/Marfusios/websocket-client) - [MIT](https://github.com/Marfusios/websocket-client/blob/master/LICENSE)
