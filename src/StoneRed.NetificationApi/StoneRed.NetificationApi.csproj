@@ -11,6 +11,7 @@
     <Description>A .NET library for NotificationAPI</Description>
     <PackageProjectUrl>https://github.com/Stone-Red-Software/StoneRed.NetificationApi</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
