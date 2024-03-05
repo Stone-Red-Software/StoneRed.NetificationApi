@@ -69,7 +69,7 @@ using StoneRed.NetificationApi.Client;
 using StoneRed.NetificationApi.Client.Models;
 
 // The client is used to receive notifications
-NotificationApiClient notificationApiClient = new NotificationApiClient(userId, clientId);
+NotificationApiClient notificationApiClient = new NotificationApiClient("<UserId>", "<ClientId>");
 
 // Listen for new notifications
 notificationApiClient.NewNotificationsReceived += (sender, args) =>
