@@ -83,6 +83,7 @@ Console.WriteLine("Send notification");
 SendNotificationData sendNotificationData = new SendNotificationData
 {
     NotificationId = notificationId,
+    Schedule = DateTime.Now.AddSeconds(10),
     User = new NotificationUser
     {
         Id = userId
