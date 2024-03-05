@@ -38,6 +38,11 @@ public class SendNotificationData
     public Dictionary<string, string>? Replace { get; set; }
 
     /// <summary>
+    /// Gets or sets the time when the notification should be scheduled.
+    /// </summary>
+    public DateTime? Schedule { get; set; }
+
+    /// <summary>
     /// Gets or sets the options for the notification.
     /// </summary>
     public NotificationOptions? Options { get; set; }
