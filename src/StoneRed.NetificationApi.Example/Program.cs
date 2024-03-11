@@ -73,9 +73,9 @@ notificationApiClient.RequestNotifications(5);
 Console.WriteLine("Notifications requested");
 
 Console.WriteLine("Identify user");
-await notificationApiServer.Identify(new IdentifyUserData
+await notificationApiServer.Identify(userId, new IdentifyUserData
 {
-    UserId = userId
+    Email = "example@example.com"
 });
 Console.WriteLine("User identified");
 
