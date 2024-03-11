@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace StoneRed.NetificationApi.Server.SetUserPreferences;
 
@@ -9,12 +8,6 @@ namespace StoneRed.NetificationApi.Server.SetUserPreferences;
 public class SetUserPreferencesData
 {
     /// <summary>
-    /// Gets or sets the user ID.
-    /// </summary>
-    [JsonIgnore]
-    public required string UserId { get; set; }
-
-    /// <summary>
     /// Gets or sets the list of notification preferences.
     /// </summary>
     public required List<NotificationPreference> Preferences { get; set; }
@@ -22,12 +15,10 @@ public class SetUserPreferencesData
     /// <summary>
     /// Initializes a new instance of the <see cref="SetUserPreferencesData"/> class.
     /// </summary>
-    /// <param name="userId">The user ID.</param>
     /// <param name="preferences">The list of notification preferences.</param>
     [SetsRequiredMembers]
-    public SetUserPreferencesData(string userId, List<NotificationPreference> preferences)
+    public SetUserPreferencesData(List<NotificationPreference> preferences)
     {
-        UserId = userId;
         Preferences = preferences;
     }
 

@@ -76,31 +76,26 @@ public class NotificationApiServer
     /// <summary>
     /// Identifies a user.
     /// </summary>
+    /// <param name="userId">The ID of the user.</param>
     /// <param name="identifyUserData">The data for identifying the user.</param>
     /// <returns>The HTTP response message.</returns>
-    public async Task<HttpResponseMessage> Identify(IdentifyUserData identifyUserData)
+    public async Task<HttpResponseMessage> Identify(string userId, IdentifyUserData identifyUserData)
     {
         string authToken;
 
         if (secureMode)
         {
-            string hashedUserId = UserIdHasher.Hash(identifyUserData.UserId, clientSecret);
-            authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{clientId}:{identifyUserData.UserId}:{hashedUserId}"));
+            string hashedUserId = UserIdHasher.Hash(userId, clientSecret);
+            authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{clientId}:{userId}:{hashedUserId}"));
         }
         else
         {
-            authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{clientId}:{identifyUserData.UserId}"));
+            authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{clientId}:{userId}"));
         }
 
-        var requestData = new
+        HttpRequestMessage request = new(HttpMethod.Post, $"users/{userId}")
         {
-            email = identifyUserData.Email,
-            number = identifyUserData.TelephoneNumber,
-        };
-
-        HttpRequestMessage request = new(HttpMethod.Post, $"users/{identifyUserData.UserId}")
-        {
-            Content = JsonContent.Create(requestData, options: Configuration.JsonSerializerOptions),
+            Content = JsonContent.Create(identifyUserData, options: Configuration.JsonSerializerOptions),
         };
 
         request.Headers.Add("Authorization", $"Basic {authToken}");
@@ -111,10 +106,11 @@ public class NotificationApiServer
     /// <summary>
     /// Sets user preferences.
     /// </summary>
+    /// <param name="userId">The ID of the user.</param>
     /// <param name="setUserPreferencesData">The data for setting user preferences.</param>
     /// <returns>The HTTP response message.</returns>
-    public async Task<HttpResponseMessage> SetUserPreferences(SetUserPreferencesData setUserPreferencesData)
+    public async Task<HttpResponseMessage> SetUserPreferences(string userId, SetUserPreferencesData setUserPreferencesData)
     {
-        return await httpClient.PostAsJsonAsync($"user_preferences/{setUserPreferencesData.UserId}", setUserPreferencesData, Configuration.JsonSerializerOptions);
+        return await httpClient.PostAsJsonAsync($"user_preferences/{userId}", setUserPreferencesData, Configuration.JsonSerializerOptions);
     }
 }
