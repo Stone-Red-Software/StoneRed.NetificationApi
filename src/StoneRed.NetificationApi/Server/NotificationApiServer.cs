@@ -111,6 +111,6 @@ public class NotificationApiServer
     /// <returns>The HTTP response message.</returns>
     public async Task<HttpResponseMessage> SetUserPreferences(string userId, SetUserPreferencesData setUserPreferencesData)
     {
-        return await httpClient.PostAsJsonAsync($"user_preferences/{userId}", setUserPreferencesData, Configuration.JsonSerializerOptions);
+        return await httpClient.PostAsJsonAsync($"user_preferences/{userId}", setUserPreferencesData.Preferences, Configuration.JsonSerializerOptions);
     }
 }
