@@ -2,6 +2,10 @@
 
 > A .NET library for NotificationAPI
 
+> [!NOTE]  
+> An official NotifcationAPI .NET server SDK is now available at [notificationapi-com/notificationapi-dotnet-server-sdk](https://github.com/notificationapi-com/notificationapi-dotnet-server-sdk)\
+> Client-side functionality is currently not available in the official library, this is why this repository will still be maintained.
+
 This is an *unofficial* library for [NotificationAPI](https://www.notificationapi.com/) and attempts to replicate the functionality of the official [Server SDK](https://docs.notificationapi.com/reference/server) and [JS Client SDK](https://docs.notificationapi.com/reference/js-client) as closely as possible.\
 (A prebuilt notification widget is not included in this library.)
 
